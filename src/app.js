@@ -6,6 +6,7 @@ const bodyparser = require("body-parser");
 const cors = require("cors");
 
 const userRouter = require("./routes/userRouter");
+const contactsRouter = require('./routes/contactsRouter');
 
 const port = process.env.PORT || 4100;
 
@@ -18,6 +19,7 @@ app.use(bodyparser.json());
 const httpServer = http.createServer(app);
 
 app.use('/users', userRouter);
+app.use('/contacts', contactsRouter);
 
 const socketOptions = {
   cors: {

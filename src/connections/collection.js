@@ -12,12 +12,12 @@ collection = {};
 const dbURL = process.env.DATABASE_URL || process.env.localDB || "mongodb+srv://sandeepxsandy49:somVcyJDII5N3c5G@cluster0.uhoidoo.mongodb.net/chatDB?retryWrites=true&w=majority";
 
 //Creating the connection for userInfo collection
-collection.getUserLoginCollection = () => {
+collection.getUserInfoCollection = () => {
   return mongoose
     .connect(dbURL, { useNewUrlParser: true })
     .then((db) => {
       //Here we are returning the model which allows to querying and manipulating the collection.
-      return db.model("userLogin", schema.userLogin);
+      return db.model("userInfo", schema.userInfo);
     })
     .catch((error) => {
       console.log(error)
@@ -30,6 +30,15 @@ collection.chatsCollection = () => {
     return db.model("chats", schema.chats);
   }).catch((err) => {
     console.log("error in connecting to chats databse >>> ", err.message);
+    throw Error(err.message)
+  })
+}
+
+collection.contactsCollection = () => {
+  return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
+    return db.model("contacts", schema.contactSchema);
+  }).catch((err) => {
+    console.log("error in connecting to contacts databse >>> ", err.message);
     throw Error(err.message)
   })
 }

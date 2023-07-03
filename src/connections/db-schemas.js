@@ -42,12 +42,45 @@ schema.chats = mongoose.Schema(
   }
 );
 
-schema.userLogin = mongoose.Schema(
+schema.contactSchema = mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true
+    },
+    nickName: {
+      type: String
+    },
     phoneNo: {
       type: Number,
       required: true,
-      unique: true,
+      validate: {
+        validator: function (v) {
+          return /^\d{10}$/.test(v);
+        },
+        message: (props) =>
+          `${props.value} is not a valid 10-digit phone number!`,
+      },
+    }
+  },
+  {
+    collection: "contacts",
+    timestamps: { createdAt: true, updatedAt: true },
+  }
+)
+
+schema.userInfo = mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: true,
+    },
+    lastName: {
+      type: String,
+      required: true,
+    },
+    phoneNo: {
+      type: Number,
       validate: {
         validator: function (v) {
           return /^\d{10}$/.test(v);
@@ -64,9 +97,12 @@ schema.userLogin = mongoose.Schema(
       type: [String],
       default: [],
     },
+    contacts: {
+      type: [String],
+    }
   },
   {
-    collection: "userLogin",
+    collection: "userInfo",
     timestamps: { createdAt: true, updatedAt: true },
   }
 );

@@ -43,4 +43,13 @@ collection.contactsCollection = () => {
   })
 }
 
+collection.socketIdMappingCollection = () => {
+  return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
+    return db.model("socketIdMapping", schema.socketIdMapping);
+  }).catch((err) => {
+    console.log("error in connecting to socket id mapping databse >>> ", err.message);
+    throw Error(err.message)
+  })
+}
+
 module.exports = collection;

@@ -118,6 +118,7 @@ requests.getChatsOfUser = (userId) => {
 }
  
 requests.addContactToUserId = (userId, contactId) => {
+    console.log("userId >>>> ", userId, "   contact id >>> ",contactId)
     return collection.getUserInfoCollection().then((model) => {
         return model.updateOne({_id: userId}, {$push: {contacts: contactId}}).then((response) => {
             if(response.matchedCount === 1 && response.modifiedCount === 1){
@@ -126,6 +127,7 @@ requests.addContactToUserId = (userId, contactId) => {
                 return false
             }
         }).catch((err) => {
+            console.log("here >>>> ", err.message)
             throw Error(err.message)
         })
     }).catch((err) => {

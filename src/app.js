@@ -4,14 +4,21 @@ const express = require("express");
 const socketIO = require("socket.io");
 const bodyparser = require("body-parser");
 const cors = require("cors");
+// const hpp = require("hpp");
+// const xss = require("xss");
+// const helmet = require("helmet");
 
 const userRouter = require("./routes/userRouter");
 const contactsRouter = require('./routes/contactsRouter');
+const handleSocketEvents = require('./routes/socketEvents');
 
 const port = process.env.PORT || 4100;
 
 const app = express();
 
+// app.use(hpp());
+// app.use(xss());
+// app.use(helmet());
 app.use(cors());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(bodyparser.json());
@@ -29,20 +36,7 @@ const socketOptions = {
 };
 const io = socketIO(httpServer, socketOptions);
 
-io.on("connection", (socket) => {
-  console.log("A client connected. >>> ", socket.id);
-
-  // Event handler for 'message' event from the client
-  socket.on("message", (message) => {
-    console.log("Received message:", message);
-    socket.emit("message", "Hi from server");
-  });
-
-  // Event handler for disconnection
-  socket.on("disconnect", () => {
-    console.log("A client disconnected.");
-  });
-});
+handleSocketEvents(io)
 
 httpServer.listen(port, () => {
   console.log(`Listening to port ${port}`);

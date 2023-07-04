@@ -6,6 +6,24 @@ mongoose.Promise = global.Promise;
 
 let schema = {};
 
+schema.socketIdMapping = mongoose.Schema(
+  {
+  socketId: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  userId: {
+    type: String,
+    required: true,
+    unique: true
+  }
+},
+{
+  collection: "socketIdMapping",
+}
+)
+
 schema.message = mongoose.Schema({
   senderId: {
     type: String,

@@ -1,46 +1,46 @@
 const socketMappingMethods = require("../models/socketIdMapping");
+const chatMethods = require("../models/chats");
 
 const handleSocketEvents = (io) => {
-    io.on("connection", (socket) => {
-      console.log("client connected >>> ", socket.id)
-        socket.on("map socketId", (userId) => {
-            console.log("userId >>> ", userId);
-            console.log("socketID >>> ", socket.id);
-            socketMappingMethods.createNewMapping(userId, socket.id).then((response) => {
-              if(response){
-                console.log("mapping success sent to client")
-                socket.emit("mapping_success", "mapping successfull")
-              }else {
-                socket.emit("mapping_failed", "mapping failed")
-              }
-            }).catch(err => {
-              console.log(err)
-            })
-        })
-        
-        // Event handler for 'message' event from the client
-        socket.on("send message", (messageData) => {
-          console.log("Received message:", messageData);
-          socket.emit("message", "Hi from server");
-          socket.broadcast.emit("broadcast", "hi from server")
-        });
-      
-        // Event handler for disconnection
-        socket.on("disconnect", () => {
-          console.log("A client disconnected.");
-          socketMappingMethods.deleteSocketIdFromMapping(socket.id).then((response) => {
-            if(response){
-              console.log("mapping deleted")
-            }else{
-              console.log("mapping deleted")
-            }
-          }).catch(err => {
-            console.log("mapping deletion failed >>> ", err.message)
-            console.log(err)
-          })
-        });
-        
-      });
-}
+  io.on("connection", (socket) => {
+    console.log("client connected >>> ", socket.id);
 
-module.exports = handleSocketEvents
+    socket.on("map_socketId", (userId) => {
+      console.log(`mapping user ${userId} with socket ${socket.id}`);
+      socketMappingMethods
+        .createNewMapping(userId, socket.id)
+        .then((mappingResponse) => {
+          if (mappingResponse) {
+            socket.emit("mapping_success", {
+              userId: userId,
+              socketId: socket.id,
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    });
+
+    socket.on("send_message", (messageData) => {
+      console.log("message data from client >>> ", messageData);
+      chatMethods.checkMessageDataAndDoRespectiveAction(messageData).then((response) => {
+        socket.emit("recieve_message", response);
+      })
+    });
+
+    socket.on("disconnect", () => {
+      console.log("client disconnected >>> ", socket.id);
+      socketMappingMethods
+        .deleteSocketIdFromMapping(socket.id)
+        .then((deleteResponse) => {
+          console.log(`mapping deleted socket ${socket.id}`);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
+    });
+  });
+};
+
+module.exports = handleSocketEvents;

@@ -10,6 +10,7 @@ const cors = require("cors");
 
 const userRouter = require("./routes/userRouter");
 const contactsRouter = require('./routes/contactsRouter');
+const chatsRouter = require("./routes/chatRouter");
 const handleSocketEvents = require('./routes/socketEvents');
 
 const port = process.env.PORT || 4100;
@@ -27,6 +28,7 @@ const httpServer = http.createServer(app);
 
 app.use('/users', userRouter);
 app.use('/contacts', contactsRouter);
+app.use('/chats', chatsRouter);
 
 const socketOptions = {
   cors: {

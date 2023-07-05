@@ -161,8 +161,23 @@ requests.createContact = (userId, contactObj) => {
         }else{
             throw Error("No user found with the phone number");
         }
+    })  
+}
+
+requests.addChatIdToUser = (userIdsArr, chatId) => {
+    return collection.getUserInfoCollection().then((model) => {
+        return model.updateMany({_id: {$in: userIdsArr}}, {$push: {chats : chatId}}).then((userResponse) => {
+            if(userResponse.matchedCount === 2 && userResponse.modifiedCount === 2) {
+                return true
+            }else {
+                return false
+            }
+        }).catch((err) => {
+            throw Error(err.message)
+        })
+    }).catch((err) => {
+        throw Error(err.message)
     })
-    
 }
 
 module.exports = requests;

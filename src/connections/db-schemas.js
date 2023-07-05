@@ -8,23 +8,23 @@ let schema = {};
 
 schema.socketIdMapping = mongoose.Schema(
   {
-  socketId: {
-    type: String,
-    required: true,
-    unique: true
+    socketId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
-  userId: {
-    type: String,
-    required: true,
-    unique: true
+  {
+    collection: "socketIdMapping",
   }
-},
-{
-  collection: "socketIdMapping",
-}
-)
+);
 
-schema.message = mongoose.Schema({
+const message = mongoose.Schema({
   senderId: {
     type: String,
     required: true,
@@ -37,11 +37,7 @@ schema.message = mongoose.Schema({
     type: String,
     required: true,
   },
-  createdAt: {
-    type: Date,
-    default: new Date().getTime(),
-  },
-  updatedAt: {
+  time: {
     type: Date,
     default: new Date().getTime(),
   },
@@ -49,13 +45,21 @@ schema.message = mongoose.Schema({
 
 schema.chats = mongoose.Schema(
   {
-    chats: {
-      type: [schema.message],
+    userId1: {
+      type: String,
+      required: true,
+    },
+    userId2: {
+      type: String,
+      required: true,
+    },
+    chat: {
+      type: [message],
       default: [],
     },
   },
   {
-    collection: "userLogin",
+    collection: "chats",
     timestamps: { createdAt: true, updatedAt: true },
   }
 );
@@ -64,10 +68,10 @@ schema.contactSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true
+      required: true,
     },
     nickName: {
-      type: String
+      type: String,
     },
     phoneNo: {
       type: Number,
@@ -79,13 +83,13 @@ schema.contactSchema = mongoose.Schema(
         message: (props) =>
           `${props.value} is not a valid 10-digit phone number!`,
       },
-    }
+    },
   },
   {
     collection: "contacts",
     timestamps: { createdAt: true, updatedAt: true },
   }
-)
+);
 
 schema.userInfo = mongoose.Schema(
   {
@@ -117,7 +121,7 @@ schema.userInfo = mongoose.Schema(
     },
     contacts: {
       type: [String],
-    }
+    },
   },
   {
     collection: "userInfo",

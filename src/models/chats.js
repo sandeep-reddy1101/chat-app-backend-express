@@ -49,14 +49,12 @@ requests.getChatUsingTwoParticipantsUsersIds = (participantsUserIdsList) => {
         return model.findOne({
             $or : [{participants : { $all: participantsUserIdsList}}, {participants: { $all: reverseParticipantsList}}]
           }).then((chatResponse) => {
-            console.log(chatResponse)
             if(chatResponse){
                 return chatResponse
             }else {
                 return null
             }
           }).catch(err => {
-            console.log(err)
             throw Error(err.message)
         })
     }).catch(err => {

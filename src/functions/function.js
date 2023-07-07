@@ -10,7 +10,6 @@ functions.checkAndSendMessageToReceiver = (socket, senderId, receiverId) => {
     socketMappingMethods.getSocketIdWithUserId(receiverId).then((receiverSocketId) => {
         if(receiverSocketId) {
             contactsMethods.getContactWithSenderAndReceiverIds(senderId, receiverId).then((contact) => {
-                console.log(" >>>> ", receiverSocketId, contact)
                 functions.sendMessageToReceiver(socket, contact, receiverSocketId)
             })
         }else{

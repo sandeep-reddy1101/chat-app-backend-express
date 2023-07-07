@@ -77,7 +77,7 @@ requests.deleteSocketIdFromMapping = (socketId) => {
 // The response is true or false
 requests.updateSocketIdForUserId = (userId, socketId) => {
     return collection.socketIdMappingCollection().then((model) => {
-        return model.updateOne({userId: userId}, {socketId: socketId}).then((response) => {
+        return model.updateOne({userId: userId}, { $set: {socketId: socketId}}).then((response) => {
             if(response.matchedCount === 1 && response.modifiedCount === 1){
                 return true
             }else {

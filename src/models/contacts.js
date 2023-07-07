@@ -95,7 +95,10 @@ requests.updateContactChatId = (chatDocument, chatId) => {
         .then((response) => {
           if (response.matchedCount === 2 && response.modifiedCount === 2) {
             return true;
-          } else {
+          } else if (response.matchedCount === 1 && response.modifiedCount === 1) {
+            // TO DO if another user doesn't feed the contact information we have handle it
+          }
+           else {
             return false;
           }
         })

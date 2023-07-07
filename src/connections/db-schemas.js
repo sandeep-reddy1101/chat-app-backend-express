@@ -51,7 +51,6 @@ schema.chats = mongoose.Schema(
     participants: {
       type: [String],
       required: true,
-      unique: true
     },
     chat: {
       type: [message],

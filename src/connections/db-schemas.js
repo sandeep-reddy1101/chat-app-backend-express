@@ -6,6 +6,7 @@ mongoose.Promise = global.Promise;
 
 let schema = {};
 
+// Schema for socketId and userId mapping
 schema.socketIdMapping = mongoose.Schema(
   {
     socketId: {
@@ -24,6 +25,7 @@ schema.socketIdMapping = mongoose.Schema(
   }
 );
 
+// message schema
 const message = mongoose.Schema({
   senderId: {
     type: String,
@@ -43,6 +45,7 @@ const message = mongoose.Schema({
   },
 });
 
+// Schema of chat collection
 schema.chats = mongoose.Schema(
   {
     participants: {
@@ -61,6 +64,7 @@ schema.chats = mongoose.Schema(
   }
 );
 
+// Schema for contacts collection
 schema.contacts = mongoose.Schema(
   {
     userId: {
@@ -96,6 +100,7 @@ schema.contacts = mongoose.Schema(
   }
 );
 
+// Schema for users collection
 schema.users = mongoose.Schema(
   {
     firstName: {

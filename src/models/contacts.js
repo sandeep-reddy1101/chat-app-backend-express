@@ -63,6 +63,8 @@ requests.getAllContactsWithUserId = (userId) => {
     });
 };
 
+// Function to update the contact document with senderId and receiverId
+// It will update chatId, lastMessageInfo and active fields of contact document
 requests.updateContactChatId = (chatDocument, chatId) => {
   const messageData = chatDocument.chat[0];
   const messageDocument = {
@@ -106,6 +108,8 @@ requests.updateContactChatId = (chatDocument, chatId) => {
     });
 };
 
+
+// Function to update the lastMessageInfo of contact document using chatId
 requests.updateLastMessageUsingChatId = (chatId, message) => {
   return collection.contactsCollection().then((model) => {
     return model.updateMany({chatId: chatId}, {$set : {lastMessageInfo: message}}).then((updateResponse) => {
@@ -122,6 +126,8 @@ requests.updateLastMessageUsingChatId = (chatId, message) => {
   });
 }
 
+
+// Function to fetch the contact document using sender and receiver ids
 requests.getContactWithSenderAndReceiverIds = (senderId, receiverId) => {
   return collection.contactsCollection().then((model) => {
     return model.findOne({ $and : [{userId: receiverId}, {contactUserId: senderId}]}).then((contactResponse) => {

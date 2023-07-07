@@ -32,12 +32,13 @@ app.use('/chats', chatsRouter);
 
 const socketOptions = {
   cors: {
-    origin: "http://localhost:5173",
+    origin: process.env.CLIENT_URL || "http://localhost:5173",
     methods: ["GET", "POST"],
   },
 };
 const io = socketIO(httpServer, socketOptions);
 
+// Handling all socket events
 handleSocketEvents(io)
 
 httpServer.listen(port, () => {

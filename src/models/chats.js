@@ -3,6 +3,8 @@ const contactMethods = require("../models/contacts");
 
 let requests = {};
 
+// Functin to create the new chat document using messageData
+// messageData = {senderId: 'ad', receiverId: "aksjd", message: "lkdjf", time: faf}
 requests.createNewChat = (messageData) => {
     const chatDocument = {
         participants: [messageData.senderId, messageData.receiverId],
@@ -39,6 +41,8 @@ requests.createNewChat = (messageData) => {
     })
 }
 
+// Function to fetch the chat document using participants array 
+// EX: [senderId, receiverId] no need to be in the same order
 requests.getChatUsingTwoParticipantsUsersIds = (participantsUserIdsList) => {
     const reverseParticipantsList = participantsUserIdsList.reverse();
     return collection.chatsCollection().then((model) => {
@@ -60,6 +64,7 @@ requests.getChatUsingTwoParticipantsUsersIds = (participantsUserIdsList) => {
     })
 } 
 
+// Function to fetch the chat document using chatId
 requests.getChatWithChatId = (chatId) => {
     return collection.chatsCollection().then((model) => {
         return model.findOne({_id: chatId}).then((chatResponse) => {
@@ -76,6 +81,7 @@ requests.getChatWithChatId = (chatId) => {
     })
 }
 
+// Function to add the new message into chat array in the chat document
 requests.addMessageTochat = (chatId, message) => {
     return collection.chatsCollection().then((model) => {
         return model.updateOne({_id: chatId}, {$push: {chat: message}}).then((updateResponse) => {

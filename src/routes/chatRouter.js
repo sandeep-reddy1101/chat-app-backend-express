@@ -3,6 +3,9 @@ const chatMethods = require("../models/chats");
 const express = require("express");
 const router = express.Router();
 
+// router post method to create a new chat 
+// req.body is {senderId: "kasjd", receiverId: "alsdn", message: "hi", time: date}
+// The response is array of chat document created. or empty array if failed to create chat
 router.post("/create-new-chat", (req, res) => {
     const messageData = req.body
     chatMethods.createNewChat(messageData).then((response) => {
@@ -16,6 +19,8 @@ router.post("/create-new-chat", (req, res) => {
     })
 })
 
+// router get method to fetch the chat document using chatId
+// The response is chat document, or null if not chat found
 router.get("/get-chat-with-chatId/:chatId", (req, res) => {
     const chatId = req.params.chatId;
     chatMethods.getChatWithChatId(chatId).then((response) => {

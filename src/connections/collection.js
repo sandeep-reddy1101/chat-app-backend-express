@@ -11,7 +11,7 @@ collection = {};
 // Getting database URL from environment file
 const dbURL = process.env.DATABASE_URL || process.env.localDB || "mongodb+srv://sandeepxsandy49:somVcyJDII5N3c5G@cluster0.uhoidoo.mongodb.net/chatDB?retryWrites=true&w=majority";
 
-//Creating the connection for userInfo collection
+//Creating the connection for users collection
 collection.usersCollection = () => {
   return mongoose
     .connect(dbURL, { useNewUrlParser: true })
@@ -25,6 +25,7 @@ collection.usersCollection = () => {
     });
 };
 
+//Creating the connection for chats collection
 collection.chatsCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
     return db.model("chats", schema.chats);
@@ -34,6 +35,7 @@ collection.chatsCollection = () => {
   })
 }
 
+//Creating the connection for contacts collection
 collection.contactsCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
     return db.model("contacts", schema.contacts);
@@ -43,20 +45,12 @@ collection.contactsCollection = () => {
   })
 }
 
+//Creating the connection for socketIdMapping collection
 collection.socketIdMappingCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
     return db.model("socketIdMapping", schema.socketIdMapping);
   }).catch((err) => {
     console.log("error in connecting to socket id mapping collection >>> ", err.message);
-    throw Error(err.message)
-  })
-}
-
-collection.activeChatsCollection = () => {
-  return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
-    return db.model("activeChats", schema.activeChats);
-  }).catch((err) => {
-    console.log("error in connecting to active chats collection >>> ", err.message);
     throw Error(err.message)
   })
 }

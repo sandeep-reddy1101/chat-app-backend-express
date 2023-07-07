@@ -23,7 +23,6 @@ requests.getUserWithUserId = (userId) => {
 
 // Creating new user
 // expected userData parameter is {firstName: "sa", lastName: "asdf", phoneNo: 234, password: "dfa", profilePic: ''}
-// 
 requests.createNewUser = (userData) => {
     return requests.getUserWithPhoneNo(userData.phoneNo).then((userResponse) => {
         if(userResponse) {
@@ -88,6 +87,7 @@ requests.verifyUserLogin = (phoneNo, password) => {
 }
 
 // Getting user document with phoneNo
+// returns everything in user document except password.
 requests.getUserWithPhoneNo = (phoneNo) => {
     return collection.usersCollection().then((model) => {
         return model.findOne({phoneNo: parseInt(phoneNo)}, {password: 0}).then((response) => {
@@ -104,6 +104,8 @@ requests.getUserWithPhoneNo = (phoneNo) => {
     })
 }
 
+// Function to get all the users in the databse
+// The response is array of all user documents
 requests.getAllUsers = () => {
     return collection.usersCollection().then((model) => {
         return model.find({}).then((response) => {

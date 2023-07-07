@@ -1,5 +1,6 @@
 const socketMappingMethods = require("../models/socketIdMapping");
 const chatMethods = require("../models/chats");
+const functions = require("../functions/function");
 
 const handleSocketEvents = (io) => {
   io.on("connection", (socket) => {
@@ -22,12 +23,29 @@ const handleSocketEvents = (io) => {
         });
     });
 
-    socket.on("send_message", (messageData) => {
+    socket.on("send_message_to_contact", (messageData) => {
       console.log("message data from client >>> ", messageData);
-      chatMethods.checkMessageDataAndDoRespectiveAction(messageData).then((response) => {
-        socket.emit("recieve_message", response);
+      chatMethods.createNewChat(messageData).then((response) => {
+        socket.emit("listen_after_sending_message_to_contact", response);
+        if(response){
+          functions.checkAndSendMessageToReceiver(socket, messageData.senderId, messageData.receiverId)
+        }
+      }).catch(err => {
+        socket.emit("listen_after_sending_message_to_contact", err.message)
       })
     });
+
+    socket.on("send_message_to_chat", (chatId, messageData) => {
+      console.log("message data from client", chatId, messageData);
+      chatMethods.addMessageTochat(chatId, messageData).then((response) => {
+        socket.emit("listen_after_sending_message_to_chat", response)
+          if(response){
+            functions.checkAndSendMessageToReceiver(socket, messageData.senderId, messageData.receiverId)
+          }
+      }).catch(err => {
+        socket.emit("listen_after_sending_message_to_chat", err.message)
+      })
+    })
 
     socket.on("disconnect", () => {
       console.log("client disconnected >>> ", socket.id);

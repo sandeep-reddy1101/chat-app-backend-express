@@ -1,45 +1,72 @@
 const chatsCollection = require("../connections/collection");
-const userMethods = require("../models/user");
+const contactMethods = require("../models/contacts");
 
 let requests = {};
 
-requests.createNewChat = (chatObj) => {
+requests.createNewChat = (messageData) => {
     const chatDocument = {
-        userId1: chatObj.senderId,
-        userId2: chatObj.receiverId,
-        chat: [chatObj]
+        participants: [messageData.senderId, messageData.receiverId],
+        chat: [messageData]
     }
-    return chatsCollection.chatsCollection().then((model) => {
-        return model.insertMany(chatDocument).then((chatResponse) => {
-            if(chatResponse.length > 0) {
-                const userIdsArr = [chatObj.senderId, chatObj.receiverId]
-                return userMethods.addChatIdToUser(userIdsArr, chatResponse[0]._id).then((userResponse) => {
-                    if(userResponse){
-                        return {flag: true, message: "Successfully created chat document and added it to user"}
-                    }else {
-                        return {flag: false, message: "Successfully created chat document but failed to added it to user"}
+    return requests.getChatUsingTwoParticipantsUsersIds(chatDocument.participants).then((response) => {
+        if(!response){
+            return collection.chatsCollection().then((model) => {
+                return model.insertMany(chatDocument).then((chatResponse) => {
+                    if(chatResponse.length > 0) {
+                        return contactMethods.updateContactChatId(chatDocument, chatResponse[0]._id).then((updateContact) => {
+                            if(updateContact){
+                                return chatResponse
+                            }else{
+                                throw Error("Failed to update the chat Id in contact")
+                            }
+                        }).catch(err => {
+                            throw Error(err.message)
+                        })
+                    } else {
+                        throw Error("Error occured while inserting the chatDocument")
                     }
                 }).catch(err => {
                     throw Error(err.message)
                 })
+            }).catch(err => {
+                throw Error(err.message)
+            })
+        }else{
+            throw Error("chat already exist between users. Can't create new chat")
+        }
+    }).catch(err => {
+        throw Error(err.message)
+    })
+}
+
+requests.getChatUsingTwoParticipantsUsersIds = (participantsUserIdsList) => {
+    const reverseParticipantsList = participantsUserIdsList.reverse();
+    return collection.chatsCollection().then((model) => {
+        return model.findOne({
+            $or : [{participants : { $all: participantsUserIdsList}}, {participants: { $all: reverseParticipantsList}}]
+          }).then((chatResponse) => {
+            console.log(chatResponse)
+            if(chatResponse){
+                return chatResponse
             }else {
-                return {flag: false, message: "Failed to create new chat document in database"}
+                return null
             }
-        }).catch(err => {
+          }).catch(err => {
+            console.log(err)
             throw Error(err.message)
         })
     }).catch(err => {
         throw Error(err.message)
     })
-}
+} 
 
 requests.getChatWithChatId = (chatId) => {
-    return chatsCollection.chatsCollection().then((model) => {
-        return model.find({_id: chatId}).then((chatResponse) => {
-            if(chatResponse.length > 0){
-                return {data: chatResponse, flag: true, message: "Chat document retrieved successfully"}
+    return collection.chatsCollection().then((model) => {
+        return model.findOne({_id: chatId}).then((chatResponse) => {
+            if(chatResponse) {
+                return chatResponse
             }else {
-                return {data: [], flag: false, message: "Chat document retrieve failed"}
+                return null
             }
         }).catch(err => {
             throw Error(err.message)
@@ -49,47 +76,21 @@ requests.getChatWithChatId = (chatId) => {
     })
 }
 
-requests.checkMessageDataAndDoRespectiveAction = (messageData) => {
-    if(messageData.friendPhoneNo){
-        return userMethods.getUserWithPhoneNo(messageData.friendPhoneNo).then((friendUserResponse) => {
-            if(friendUserResponse.length > 0) {
-                const chatDocument = {
-                    senderId: messageData.userId,
-                    receiverId: friendUserResponse[0]._id,
-                    message: messageData.message,
-                    time: messageData.time? messageData.time : new Date().getTime()
-                }
-                return requests.createNewChat(chatDocument).then((response) => {
-                    return response
+requests.addMessageTochat = (chatId, message) => {
+    return collection.chatsCollection().then((model) => {
+        return model.updateOne({_id: chatId}, {$push: {chat: message}}).then((updateResponse) => {
+            if(updateResponse.matchedCount === 1 && updateResponse.modifiedCount === 1) {
+                return contactMethods.updateLastMessageUsingChatId(chatId, message).then((contactResponse) => {
+                    if(contactResponse) {
+                        return true
+                    }else{
+                        return false
+                    }
                 }).catch(err => {
                     throw Error(err.message)
                 })
-            }
-        }).catch(err => {
-            throw Error(err.message)
-        })
-    }else {
-        const chatDocument = {
-            senderId: messageData.userId,
-            receiverId: messageData.friendId,
-            message: messageData.message,
-            time: messageData.time? messageData.time : new Date().getTime()
-        }
-        return requests.createNewChat(chatDocument).then((response) => {
-            return response
-        }).catch(err => {
-            throw Error(err.message)
-        })
-    }
-}
-
-requests.getBulkChatsWithChatIds = (chatIdsArr) => {
-    return chatsCollection.chatsCollection().then((model) => {
-        return model.find({_id: {$in: chatIdsArr}}).then((chatsResponse) => {
-            if(chatsResponse.length > 0) {
-                return {flag: true, message: "chats retreived successfully", data: chatsResponse}
             }else{
-                return {flag: false, message: "chats retreive failed", data: []}
+                return false
             }
         }).catch(err => {
             throw Error(err.message)

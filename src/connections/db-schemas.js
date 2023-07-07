@@ -39,19 +39,16 @@ const message = mongoose.Schema({
   },
   time: {
     type: Date,
-    default: new Date().getTime(),
+    default: Date.now,
   },
 });
 
 schema.chats = mongoose.Schema(
   {
-    userId1: {
-      type: String,
+    participants: {
+      type: [String],
       required: true,
-    },
-    userId2: {
-      type: String,
-      required: true,
+      unique: true
     },
     chat: {
       type: [message],
@@ -64,26 +61,34 @@ schema.chats = mongoose.Schema(
   }
 );
 
-schema.contactSchema = mongoose.Schema(
+schema.contacts = mongoose.Schema(
   {
-    name: {
+    userId: {
       type: String,
-      required: true,
+      required: true
     },
     nickName: {
       type: String,
+      required: true
     },
-    phoneNo: {
+    contactPhoneNo: {
       type: Number,
-      required: true,
-      validate: {
-        validator: function (v) {
-          return /^\d{10}$/.test(v);
-        },
-        message: (props) =>
-          `${props.value} is not a valid 10-digit phone number!`,
-      },
+      required: true
     },
+    contactUserId: {
+      type: String,
+      required: true
+    },
+    chatId: {
+      type: String,
+    },
+    lastMessageInfo: {
+      type: message,
+    },
+    active: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     collection: "contacts",
@@ -91,7 +96,7 @@ schema.contactSchema = mongoose.Schema(
   }
 );
 
-schema.userInfo = mongoose.Schema(
+schema.users = mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -115,18 +120,40 @@ schema.userInfo = mongoose.Schema(
       type: String,
       required: true,
     },
-    chats: {
-      type: [String],
-      default: [],
-    },
-    contacts: {
-      type: [String],
-    },
+    profilePic: {
+      type: String,
+      default: '',
+    }
   },
   {
-    collection: "userInfo",
+    collection: "users",
     timestamps: { createdAt: true, updatedAt: true },
   }
 );
+
+// schema.activeChats = mongoose.Schema(
+//   {
+//     userId: {
+//       type: String,
+//       required: true,
+//     },
+//     nickName: {
+//       type: String,
+//       required: true,
+//     },
+//     chatId: {
+//       type: String,
+//       required: true
+//     },
+//     lastMessageInfo: {
+//       type: message,
+//       required: true
+//     }
+//   },
+//   {
+//     collection: "activeChats",
+//     timestamps: { createdAt: true, updatedAt: true },
+//   }
+// )
 
 module.exports = schema;

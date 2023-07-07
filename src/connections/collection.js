@@ -12,15 +12,15 @@ collection = {};
 const dbURL = process.env.DATABASE_URL || process.env.localDB || "mongodb+srv://sandeepxsandy49:somVcyJDII5N3c5G@cluster0.uhoidoo.mongodb.net/chatDB?retryWrites=true&w=majority";
 
 //Creating the connection for userInfo collection
-collection.getUserInfoCollection = () => {
+collection.usersCollection = () => {
   return mongoose
     .connect(dbURL, { useNewUrlParser: true })
     .then((db) => {
       //Here we are returning the model which allows to querying and manipulating the collection.
-      return db.model("userInfo", schema.userInfo);
+      return db.model("users", schema.users);
     })
     .catch((error) => {
-      console.log(error)
+      console.log("error in connecting to users collection >>> ", err.message);
       throw Error(error.message)
     });
 };
@@ -29,16 +29,16 @@ collection.chatsCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
     return db.model("chats", schema.chats);
   }).catch((err) => {
-    console.log("error in connecting to chats databse >>> ", err.message);
+    console.log("error in connecting to chats collection >>> ", err.message);
     throw Error(err.message)
   })
 }
 
 collection.contactsCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
-    return db.model("contacts", schema.contactSchema);
+    return db.model("contacts", schema.contacts);
   }).catch((err) => {
-    console.log("error in connecting to contacts databse >>> ", err.message);
+    console.log("error in connecting to contacts collection >>> ", err.message);
     throw Error(err.message)
   })
 }
@@ -47,7 +47,16 @@ collection.socketIdMappingCollection = () => {
   return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
     return db.model("socketIdMapping", schema.socketIdMapping);
   }).catch((err) => {
-    console.log("error in connecting to socket id mapping databse >>> ", err.message);
+    console.log("error in connecting to socket id mapping collection >>> ", err.message);
+    throw Error(err.message)
+  })
+}
+
+collection.activeChatsCollection = () => {
+  return mongoose.connect(dbURL, { useNewUrlParser: true}).then((db) => {
+    return db.model("activeChats", schema.activeChats);
+  }).catch((err) => {
+    console.log("error in connecting to active chats collection >>> ", err.message);
     throw Error(err.message)
   })
 }

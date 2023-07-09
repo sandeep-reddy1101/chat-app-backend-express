@@ -49,6 +49,7 @@ requests.getAllContactsWithUserId = (userId) => {
         .find({ userId: userId })
         .then((contactsResponse) => {
           if (contactsResponse.length > 0) {
+            contactsResponse.sort((a, b) => b.updatedAt - a.updatedAt);
             return contactsResponse;
           } else {
             return null;
